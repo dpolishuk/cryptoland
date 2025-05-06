@@ -23,9 +23,9 @@
         }
         .header-title {
             font-family: 'Press Start 2P', cursive;
-            font-size: 2rem; /* Увеличил размер для лучшей читаемости */
+            font-size: 2rem;
             color: #00f0ff; /* Яркий голубой неон */
-            text-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff, 0 0 15px #00f0ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff; /* Более интенсивное свечение */
+            text-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff, 0 0 15px #00f0ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff;
             margin-bottom: 20px;
             text-align: center;
             padding: 10px;
@@ -35,7 +35,7 @@
             height: 85vh;
             background-color: #1a0a38; /* Темно-фиолетовый фон для контейнера */
             border: 2px solid #ff00ff; /* Пурпурная неоновая рамка */
-            box-shadow: 0 0 15px #ff00ff, inset 0 0 10px #ff00ff; /* Внешнее и внутреннее свечение рамки */
+            box-shadow: 0 0 15px #ff00ff, inset 0 0 10px #ff00ff;
             border-radius: 15px;
             position: relative;
         }
@@ -49,37 +49,54 @@
             stroke-width: 2px;
             filter: drop-shadow(0 0 3px #00f0ff); /* Свечение для кругов */
         }
-        .node text {
+        .node text.node-label { /* Класс для текстовых меток */
             font-family: 'Roboto Mono', monospace;
             fill: #e0e0e0; /* Светлый текст */
             font-size: 10px;
             text-shadow: 0 0 3px #00f0ff; /* Легкое свечение текста */
-            pointer-events: none; /* Чтобы текст не мешал событиям на круге */
+            pointer-events: none;
         }
+        .node text.node-icon { /* Класс для иконок */
+            font-size: 16px; /* Размер иконки */
+            fill: #00f0ff; /* Цвет иконки - неоновый голубой */
+            text-shadow: 0 0 5px #00f0ff, 0 0 8px #ff00ff;
+            pointer-events: none;
+        }
+
+        .node.root > circle { r: 50px !important; fill: #1f0a4d; }
+        .node.root > text.node-icon { font-size: 28px; }
+        .node.root > text.node-label { font-size: 12px; font-weight: bold; fill: #ff00ff; }
+
+
         .node.main-category > circle {
             r: 35px !important;
-            fill: #2c125c; /* Темно-фиолетовый для основных категорий */
+            fill: #2c125c;
         }
-        .node.main-category > text {
-            font-size: 12px;
+        .node.main-category > text.node-icon { font-size: 20px; }
+        .node.main-category > text.node-label {
+            font-size: 11px; /* Уменьшил немного для лучшего размещения с иконкой */
             font-weight: bold;
-            fill: #ff00ff; /* Пурпурный текст для основных категорий */
+            fill: #ff00ff;
         }
+
         .node.sub-category > circle {
             r: 25px !important;
-            fill: #4a237a; /* Средне-фиолетовый для подкатегорий */
+            fill: #4a237a;
         }
-        .node.sub-category > text {
-            font-size: 10px;
-            fill: #00f0ff; /* Голубой текст для подкатегорий */
+        .node.sub-category > text.node-icon { font-size: 16px; }
+        .node.sub-category > text.node-label {
+            font-size: 9px; /* Уменьшил */
+            fill: #00f0ff;
         }
+
         .node.item > circle {
-            r: 15px !important;
-            fill: #6b3093; /* Светло-фиолетовый для элементов */
+            r: 18px !important; /* Немного увеличил для иконки */
+            fill: #6b3093;
         }
-        .node.item > text {
-            font-size: 9px;
-            fill: #f0f0f0; /* Белый текст для элементов */
+        .node.item > text.node-icon { font-size: 12px; }
+        .node.item > text.node-label {
+            font-size: 8px; /* Уменьшил, но будет отображаться */
+            fill: #f0f0f0;
         }
         .link {
             stroke: #ff00ff; /* Пурпурные линии */
@@ -96,14 +113,13 @@
             border: 1px solid #00f0ff;
             border-radius: 8px;
             color: #00f0ff;
-            pointer-events: none; /* чтобы не мешал событиям мыши */
+            pointer-events: none;
             opacity: 0;
             transition: opacity 0.3s;
             box-shadow: 0 0 10px #00f0ff;
             max-width: 200px;
             word-wrap: break-word;
         }
-        /* Стили для кнопок управления */
         .controls {
             position: absolute;
             top: 10px;
@@ -127,8 +143,6 @@
             background-color: #4a237a;
             box-shadow: 0 0 10px #00f0ff;
         }
-
-        /* Анимация для фона */
         @keyframes backgroundGrid {
             0% { background-position: 0 0; }
             100% { background-position: 50px 50px; }
@@ -140,7 +154,7 @@
             background-image:
                 linear-gradient(to right, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
-            background-size: 25px 25px; /* Размер сетки */
+            background-size: 25px 25px;
             animation: backgroundGrid 4s linear infinite;
             z-index: 0;
             border-radius: 15px;
@@ -149,7 +163,6 @@
             position: relative;
             z-index: 1;
         }
-
     </style>
 </head>
 <body>
@@ -164,135 +177,105 @@
     </div>
 
     <script>
-        // Структура данных для mindmap, извлеченная из документа
+        // Структура данных для mindmap с иконками
+        // Иконки: 🌐 - мир/сеть, 📊 - сегменты, 🏦 - CEX, 🔗 - DeFi, 🖼️ - NFT, 👛 - кошельки, 🚀 - L2, 💲 - стейблкоины
+        // 🪙 - криптовалюты, ₿ - Bitcoin, ♦️ - Ethereum, 💸 - платежные, 📜 - смарт-контракты, 🕵️ - Monero
+        // 📈 - тренды, ⚖️ - регулирование, 🌉 - TradFi, ⏩ - Рост L2, 🧠🔗 - AI+Блокчейн, 🔄 - DeFi 2.0, 🎮 - GameFi, ✨ - UX
+        // ⚙️⬆️ - драйверы роста, 🏢 - институц., 🧱 - блокчейн, 🏠🔗 - RWA, 🛒 - платежи, ✅ - ясность
         const mindmapData = {
-            name: "Крипторынок 2025",
-            type: "root",
-            description: "Общий ландшафт криптовалютной индустрии в 2025 году.",
+            name: "Крипторынок 2025", type: "root", icon: "🌌", description: "Общий ландшафт криптовалютной индустрии в 2025 году.",
             children: [
                 {
-                    name: "Сегменты Рынка",
-                    type: "main-category",
-                    description: "Основные сегменты криптовалютного рынка.",
+                    name: "Сегменты Рынка", type: "main-category", icon: "📊", description: "Основные сегменты криптовалютного рынка.",
                     children: [
-                        {
-                            name: "CEX",
-                            type: "sub-category",
-                            description: "Централизованные биржи. Основные точки входа на рынок.",
+                        { name: "CEX", type: "sub-category", icon: "🏦", description: "Централизованные биржи.",
                             children: [
-                                { name: "Binance", type: "item", description: "Крупнейшая биржа по объему торгов." },
-                                { name: "Coinbase", type: "item", description: "Популярна в США, фокус на регуляции." },
-                                { name: "Kraken", type: "item", description: "Старейшая биржа, известна безопасностью." }
+                                { name: "Binance", type: "item", icon: "B", description: "Крупнейшая биржа." },
+                                { name: "Coinbase", type: "item", icon: "C", description: "Популярна в США." },
+                                { name: "Kraken", type: "item", icon: "K", description: "Старейшая биржа." }
                             ]
                         },
-                        {
-                            name: "DeFi & DEX",
-                            type: "sub-category",
-                            description: "Децентрализованные финансы и биржи. Инновационный сектор.",
+                        { name: "DeFi & DEX", type: "sub-category", icon: "🔗", description: "Децентрализованные финансы и биржи.",
                             children: [
-                                { name: "Uniswap", type: "item", description: "Ведущая DEX на Ethereum." },
-                                { name: "Aave", type: "item", description: "Лидер кредитования и заимствования." },
-                                { name: "MakerDAO", type: "item", description: "Протокол стейблкоина DAI." }
+                                { name: "Uniswap", type: "item", icon: "🦄", description: "Ведущая DEX." },
+                                { name: "Aave", type: "item", icon: "👻", description: "Лидер кредитования." },
+                                { name: "MakerDAO", type: "item", icon: "⚖️", description: "Протокол DAI." }
                             ]
                         },
-                        {
-                            name: "NFT Маркетплейсы",
-                            type: "sub-category",
-                            description: "Платформы для торговли невзаимозаменяемыми токенами.",
+                        { name: "NFT Маркетплейсы", type: "sub-category", icon: "🖼️", description: "Платформы для торговли NFT.",
                             children: [
-                                { name: "OpenSea", type: "item", description: "Крупнейший NFT маркетплейс." },
-                                { name: "Magic Eden", type: "item", description: "Доминирует на Solana." }
+                                { name: "OpenSea", type: "item", icon: "🌊", description: "Крупнейший NFT маркетплейс." },
+                                { name: "Magic Eden", type: "item", icon: "🧙", description: "Доминирует на Solana." }
                             ]
                         },
-                        {
-                            name: "Кошельки",
-                            type: "sub-category",
-                            description: "Инструменты для управления цифровыми активами.",
+                        { name: "Кошельки", type: "sub-category", icon: "👛", description: "Инструменты для управления активами.",
                             children: [
-                                { name: "MetaMask", type: "item", description: "Самый популярный программный кошелек." },
-                                { name: "Trust Wallet", type: "item", description: "Мобильный кошелек от Binance." },
-                                { name: "Ledger/Trezor", type: "item", description: "Аппаратные кошельки для безопасности." }
+                                { name: "MetaMask", type: "item", icon: "🦊", description: "Популярный программный кошелек." },
+                                { name: "Trust Wallet", type: "item", icon: "🛡️", description: "Мобильный кошелек Binance." },
+                                { name: "Ledger/Trezor", type: "item", icon: "🔒", description: "Аппаратные кошельки." }
                             ]
                         },
-                        {
-                            name: "L2 Решения",
-                            type: "sub-category",
-                            description: "Решения масштабирования второго уровня для блокчейнов.",
+                        { name: "L2 Решения", type: "sub-category", icon: "🚀", description: "Решения масштабирования L2.",
                             children: [
-                                { name: "Polygon", type: "item", description: "Ведущая L2 экосистема (PoS, zkEVM)." },
-                                { name: "Arbitrum", type: "item", description: "Лидер Optimistic Rollup." },
-                                { name: "Optimism", type: "item", description: "Популярный Optimistic Rollup (OP Stack)." }
+                                { name: "Polygon", type: "item", icon: "🟣", description: "Ведущая L2 экосистема." },
+                                { name: "Arbitrum", type: "item", icon: "🅰️", description: "Лидер Optimistic Rollup." },
+                                { name: "Optimism", type: "item", icon: "🔴", description: "Популярный Optimistic Rollup." }
                             ]
                         },
-                        {
-                            name: "Стейблкоины",
-                            type: "sub-category",
-                            description: "Эмитенты стейблкоинов, обеспечивающих стабильность.",
+                        { name: "Стейблкоины", type: "sub-category", icon: "💲", description: "Эмитенты стейблкоинов.",
                             children: [
-                                { name: "Tether (USDT)", type: "item", description: "Крупнейший стейблкоин по капитализации." },
-                                { name: "Circle (USDC)", type: "item", description: "Второй по величине, фокус на прозрачность." },
-                                { name: "MakerDAO (DAI)", type: "item", description: "Крупнейший децентрализованный стейблкоин." }
+                                { name: "Tether (USDT)", type: "item", icon: "₮", description: "Крупнейший стейблкоин." },
+                                { name: "Circle (USDC)", type: "item", icon: "C", description: "Второй по величине." },
+                                { name: "MakerDAO (DAI)", type: "item", icon: "D", description: "Децентрализованный стейблкоин." }
                             ]
                         }
                     ]
                 },
                 {
-                    name: "Криптовалюты",
-                    type: "main-category",
-                    description: "Обзор основных криптовалют.",
+                    name: "Криптовалюты", type: "main-category", icon: "🪙", description: "Обзор основных криптовалют.",
                     children: [
-                        { name: "Bitcoin (BTC)", type: "sub-category", description: "'Цифровое золото', средство сбережения." },
-                        { name: "Ethereum (ETH)", type: "sub-category", description: "'Мировой компьютер', основа DeFi и NFT." },
-                        {
-                            name: "Платежные",
-                            type: "sub-category",
-                            description: "Криптовалюты, ориентированные на платежи.",
+                        { name: "Bitcoin (BTC)", type: "sub-category", icon: "₿", description: "'Цифровое золото'." },
+                        { name: "Ethereum (ETH)", type: "sub-category", icon: "♦️", description: "'Мировой компьютер'." },
+                        { name: "Платежные", type: "sub-category", icon: "💸", description: "Криптовалюты для платежей.",
                             children: [
-                                { name: "Ripple (XRP)", type: "item", description: "Трансграничные платежи для банков." },
-                                { name: "Stellar (XLM)", type: "item", description: "Быстрые и дешевые переводы." },
-                                { name: "Bitcoin Cash (BCH)", type: "item", description: "Peer-to-peer электронные деньги." },
-                                { name: "Litecoin (LTC)", type: "item", description: "'Серебро к золоту Bitcoin'." }
+                                { name: "Ripple (XRP)", type: "item", icon: "✖️", description: "Трансграничные платежи." },
+                                { name: "Stellar (XLM)", type: "item", icon: "✨", description: "Быстрые переводы." },
+                                { name: "Bitcoin Cash (BCH)", type: "item", icon: "💵", description: "Peer-to-peer деньги." },
+                                { name: "Litecoin (LTC)", type: "item", icon: "Ł", description: "'Цифровое серебро'." }
                             ]
                         },
-                        {
-                            name: "Смарт-Контракты",
-                            type: "sub-category",
-                            description: "Платформы смарт-контрактов (альтернативы ETH).",
+                        { name: "Смарт-Контракты", type: "sub-category", icon: "📜", description: "Платформы смарт-контрактов.",
                             children: [
-                                { name: "Solana (SOL)", type: "item", description: "Высокопроизводительный L1." },
-                                { name: "Cardano (ADA)", type: "item", description: "L1 с фокусом на исследования." },
-                                { name: "BNB", type: "item", description: "Нативный токен экосистемы Binance." },
-                                { name: "Polkadot (DOT)", type: "item", description: "L0 для интероперабельности." }
+                                { name: "Solana (SOL)", type: "item", icon: "☀️", description: "Высокопроизводительный L1." },
+                                { name: "Cardano (ADA)", type: "item", icon: "🐉", description: "L1 на исследованиях." },
+                                { name: "BNB", type: "item", icon: "🔶", description: "Токен Binance." },
+                                { name: "Polkadot (DOT)", type: "item", icon: "⚫", description: "L0 для интероперабельности." }
                             ]
                         },
-                        { name: "Monero (XMR)", type: "sub-category", description: "Ведущая приватная монета." }
+                        { name: "Monero (XMR)", type: "sub-category", icon: "🕵️", description: "Приватная монета." }
                     ]
                 },
                 {
-                    name: "Тренды 2025",
-                    type: "main-category",
-                    description: "Ключевые тенденции развития криптоиндустрии.",
+                    name: "Тренды 2025", type: "main-category", icon: "📈", description: "Ключевые тенденции индустрии.",
                     children: [
-                        { name: "Регулирование", type: "item", description: "Усиление регуляторного внимания и стандартизации." },
-                        { name: "Интеграция TradFi", type: "item", description: "Стирание границ с традиционными финансами." },
-                        { name: "Рост L2", type: "item", description: "Бум решений второго уровня для масштабирования." },
-                        { name: "AI и Блокчейн", type: "item", description: "Синергия для оптимизации и новых возможностей." },
-                        { name: "DeFi 2.0", type: "item", description: "Развитие к более сложным и устойчивым протоколам." },
-                        { name: "NFT & GameFi", type: "item", description: "Зрелость рынков, фокус на полезность и качество." },
-                        { name: "Улучшение UX", type: "item", description: "Упрощение взаимодействия с крипто-приложениями." }
+                        { name: "Регулирование", type: "item", icon: "⚖️", description: "Усиление внимания." },
+                        { name: "Интеграция TradFi", type: "item", icon: "🌉", description: "С традиционными финансами." },
+                        { name: "Рост L2", type: "item", icon: "⏩", description: "Бум решений L2." },
+                        { name: "AI и Блокчейн", type: "item", icon: "🧠", description: "Синергия технологий." },
+                        { name: "DeFi 2.0", type: "item", icon: "🔄", description: "Новые протоколы." },
+                        { name: "NFT & GameFi", type: "item", icon: "🎮", description: "Зрелость рынков." },
+                        { name: "Улучшение UX", type: "item", icon: "✨", description: "Упрощение интерфейсов." }
                     ]
                 },
                  {
-                    name: "Драйверы Роста",
-                    type: "main-category",
-                    description: "Факторы, способствующие росту рынка.",
+                    name: "Драйверы Роста", type: "main-category", icon: "⚙️", description: "Факторы роста рынка.", // Измененная иконка
                     children: [
-                        { name: "Институц. Принятие", type: "item", description: "Вход крупных финансовых компаний и фондов." },
-                        { name: "Развитие Блокчейн", type: "item", description: "Инновации в базовой технологии." },
-                        { name: "Рост DeFi", type: "item", description: "Альтернативы традиционным банковским услугам." },
-                        { name: "Токенизация RWA", type: "item", description: "Перевод реальных активов в цифровые токены." },
-                        { name: "Принятие Платежей", type: "item", description: "Использование криптовалют для оплаты товаров и услуг." },
-                        { name: "Регул. Ясность", type: "item", description: "Движение к более четким правилам игры." }
+                        { name: "Институц. Принятие", type: "item", icon: "🏢", description: "Вход крупных компаний." },
+                        { name: "Развитие Блокчейн", type: "item", icon: "🧱", description: "Инновации технологии." },
+                        { name: "Рост DeFi", type: "item", icon: "🔗", description: "Альтернативы банкам." }, // Повтор иконки, но контекст другой
+                        { name: "Токенизация RWA", type: "item", icon: "🏠", description: "Цифровые реальные активы." },
+                        { name: "Принятие Платежей", type: "item", icon: "🛒", description: "Использование в оплате." },
+                        { name: "Регул. Ясность", type: "item", icon: "✅", description: "Четкие правила." }
                     ]
                 }
             ]
@@ -306,33 +289,34 @@
             .attr("viewBox", [-width / 2, -height / 2, width, height])
             .style("font", "10px sans-serif");
 
-        const g = svg.append("g"); // Группа для масштабирования и панорамирования
+        const g = svg.append("g");
 
-        // Создаем иерархию
         const root = d3.hierarchy(mindmapData);
         const links = root.links();
         const nodes = root.descendants();
 
-        // Настройка симуляции
         const simulation = d3.forceSimulation(nodes)
             .force("link", d3.forceLink(links).id(d => d.id).distance(d => {
-                // Увеличиваем расстояние для более глубоких уровней
-                if (d.source.depth === 0) return 150; // От корня к основным категориям
-                if (d.source.depth === 1) return 100; // От основных категорий к подкатегориям
-                return 60; // От подкатегорий к элементам
-            }).strength(0.8)) // Увеличил силу связи
+                if (d.source.depth === 0) return 180; 
+                if (d.source.depth === 1) return 120; 
+                return 70; 
+            }).strength(0.7)) 
             .force("charge", d3.forceManyBody().strength(d => {
-                // Более сильное отталкивание для корневого и основных узлов
-                if (d.depth === 0) return -1000;
-                if (d.depth === 1) return -600;
-                return -300;
+                if (d.depth === 0) return -1500;
+                if (d.depth === 1) return -800;
+                return -400; 
             }))
-            .force("center", d3.forceCenter(0, 0)) // Центрируем граф
-            .force("x", d3.forceX().strength(0.05)) // Слабое притяжение к центру по X
-            .force("y", d3.forceY().strength(0.05)); // Слабое притяжение к центру по Y
+            .force("center", d3.forceCenter(0, 0))
+            .force("x", d3.forceX().strength(0.05))
+            .force("y", d3.forceY().strength(0.05))
+            .force("collision", d3.forceCollide().radius(d => { 
+                 if (d.depth === 0) return 55;
+                 if (d.data.type === "main-category") return 40;
+                 if (d.data.type === "sub-category") return 30;
+                 return 22;
+            }));
 
 
-        // Создаем линии (связи)
         const link = g.append("g")
             .attr("class", "links")
             .selectAll("line")
@@ -340,39 +324,74 @@
             .join("line")
             .attr("class", "link");
 
-        // Создаем узлы
         const node = g.append("g")
             .attr("class", "nodes")
             .selectAll("g")
             .data(nodes)
             .join("g")
-            .attr("class", d => `node ${d.data.type || 'item'}`) // Добавляем класс по типу узла
+            .attr("class", d => `node ${d.data.type || 'item'}`)
             .call(drag(simulation));
 
         node.append("circle")
             .attr("r", d => {
-                if (d.depth === 0) return 50; // Корень
+                if (d.depth === 0) return 50;
                 if (d.data.type === "main-category") return 35;
                 if (d.data.type === "sub-category") return 25;
-                return 15; // Элементы
+                return 18; 
             });
 
+        // Add icon
         node.append("text")
-            .attr("dy", "0.31em")
+            .attr("class", "node-icon")
             .attr("text-anchor", "middle")
-            .text(d => d.data.name)
-            .each(function(d) { // Обрезка длинного текста
-                const text = d3.select(this);
-                const words = d.data.name.split(/\s+/).reverse();
+            .attr("dy", d => {
+                const isLeaf = d.data.type === "item" || (d.data.type === "sub-category" && !d.children);
+                const hasLongName = d.data.name.split(/\s+/).length > 1;
+                const hasChildrenOrIsDeep = d.children || d.depth > 1;
+
+                if (isLeaf) return "0.1em"; // Icon centered for leaves
+                if (hasLongName && hasChildrenOrIsDeep) return "-0.3em"; // Icon higher for non-leaves with multi-line text
+                return "-0.4em"; // Default for non-leaves (icon higher)
+            })
+            .text(d => d.data.icon || "");
+
+        // Add text label
+        node.append("text")
+            .attr("class", "node-label")
+            .attr("text-anchor", "middle")
+            .each(function(d) {
+                const textElement = d3.select(this);
+                const words = d.data.name.split(/\s+/).reverse(); 
                 let word;
                 let line = [];
                 const lineHeight = 1.1; // ems
-                const y = text.attr("y");
-                const dy = parseFloat(text.attr("dy"));
-                let tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
-                const maxWidth = (d.depth === 0 ? 90 : d.data.type === "main-category" ? 60 : d.data.type === "sub-category" ? 45 : 30);
+                let yPosition; // This will be the dy for the first tspan
+
+                if (d.data.icon) { 
+                    const isLeaf = d.data.type === "item" || (d.data.type === "sub-category" && !d.children);
+                    if (isLeaf) {
+                        // Leaf node with icon: icon is at dy="0.1em". Text should be below.
+                        yPosition = 0.9; // Adjusted to be clearly below the centered icon
+                    } else if (d.depth === 0) { // Root node with icon
+                        yPosition = 1.1; // Text further down from raised icon (was 0.9, icon higher)
+                    } else { // Non-leaf, non-root node with icon
+                        yPosition = 1.0; // Text below raised icon (was 0.8, icon higher)
+                    }
+                } else { // No icon, text is centered
+                    yPosition = 0.31;
+                }
+
+                let tspan = textElement.text(null).append("tspan")
+                                .attr("x", 0)
+                                .attr("dy", yPosition + "em");
+                
+                const maxWidth = (d.depth === 0 ? 80 :
+                                 d.data.type === "main-category" ? 55 :
+                                 (d.data.type === "sub-category" && d.children) ? 40 : // sub-category with children
+                                 30); // item or sub-category leaf (increased slightly)
 
                 let lineCount = 0;
+
                 while (word = words.pop()) {
                     line.push(word);
                     tspan.text(line.join(" "));
@@ -380,32 +399,35 @@
                         line.pop();
                         tspan.text(line.join(" "));
                         line = [word];
-                        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", (++lineCount * lineHeight + dy) + "em").text(word);
+                        tspan = textElement.append("tspan")
+                                    .attr("x", 0)
+                                    .attr("dy", lineHeight + "em") 
+                                    .text(word);
+                        lineCount++;
                     }
                 }
-                 // Центрирование многострочного текста
+
+                // Vertical centering for multi-line text block
                 if (lineCount > 0) {
-                    text.selectAll("tspan").attr("dy", function(d, i) {
-                        return (i - lineCount / 2) * lineHeight + dy + "em";
-                    });
+                    const firstTspan = textElement.select("tspan");
+                    // Get the original dy of the first tspan (which includes yPosition)
+                    const currentFirstTspanDy = parseFloat(firstTspan.attr("dy").replace("em",""));
+                    // Shift the first tspan up by half the height of the *additional* lines
+                    // to center the entire block.
+                    firstTspan.attr("dy", (currentFirstTspanDy - (lineCount * lineHeight / 2)) + "em");
                 }
             });
 
 
-        // Tooltip
         const tooltip = d3.select(".tooltip");
-
         node.on("mouseover", function(event, d) {
             tooltip.transition().duration(200).style("opacity", .9);
-            tooltip.html(`<strong>${d.data.name}</strong><br>${d.data.description || ''}`)
+            tooltip.html(`<strong>${d.data.icon ? d.data.icon + ' ' : ''}${d.data.name}</strong><br>${d.data.description || ''}`)
                 .style("left", (event.pageX + 15) + "px")
                 .style("top", (event.pageY - 28) + "px");
-
-            // Выделение узла и его связей
             d3.select(this).select("circle").style("stroke", "#ff00ff").style("stroke-width", "3px");
             link.style('stroke-opacity', o => (o.source === d || o.target === d ? 1 : 0.3));
             link.style('stroke', o => (o.source === d || o.target === d ? '#00f0ff' : '#ff00ff'));
-
         })
         .on("mouseout", function(event, d) {
             tooltip.transition().duration(500).style("opacity", 0);
@@ -414,7 +436,6 @@
             link.style('stroke', '#ff00ff');
         });
 
-        // Обновление позиций на каждом тике симуляции
         simulation.on("tick", () => {
             link
                 .attr("x1", d => d.source.x)
@@ -425,7 +446,6 @@
                 .attr("transform", d => `translate(${d.x},${d.y})`);
         });
 
-        // Функция перетаскивания
         function drag(simulation) {
             function dragstarted(event, d) {
                 if (!event.active) simulation.alphaTarget(0.3).restart();
@@ -447,44 +467,23 @@
                 .on("end", dragended);
         }
 
-        // Масштабирование и панорамирование
         const zoom = d3.zoom()
-            .scaleExtent([0.3, 3]) // Ограничение масштаба
+            .scaleExtent([0.2, 3]) 
             .on("zoom", (event) => {
                 g.attr("transform", event.transform);
             });
-
         svg.call(zoom);
+        d3.select("#zoom-in").on("click", function() { zoom.scaleBy(svg.transition().duration(300), 1.2); });
+        d3.select("#zoom-out").on("click", function() { zoom.scaleBy(svg.transition().duration(300), 0.8); });
+        d3.select("#reset-zoom").on("click", function() { svg.transition().duration(300).call(zoom.transform, d3.zoomIdentity.translate(0,0).scale(0.6)); }); 
+        svg.call(zoom.transform, d3.zoomIdentity.translate(0,0).scale(0.6)); 
 
-        // Кнопки управления масштабом
-        d3.select("#zoom-in").on("click", function() {
-            zoom.scaleBy(svg.transition().duration(300), 1.2);
-        });
-        d3.select("#zoom-out").on("click", function() {
-            zoom.scaleBy(svg.transition().duration(300), 0.8);
-        });
-        d3.select("#reset-zoom").on("click", function() {
-            svg.transition().duration(300).call(zoom.transform, d3.zoomIdentity); // Сброс к исходному состоянию
-        });
-
-        // Начальный масштаб (немного уменьшенный, чтобы все влезло)
-        svg.call(zoom.transform, d3.zoomIdentity.translate(0,0).scale(0.7));
-
-
-        // Остановка симуляции через некоторое время для стабилизации
         setTimeout(() => {
-            simulation.stop();
-        }, 8000); // Остановить через 8 секунд
-
-        // Периодический "перезапуск" симуляции для динамики, если узлы застряли
-        // setInterval(() => {
-        //     if (simulation.alpha() < 0.01) { // Если симуляция почти остановилась
-        //         simulation.alpha(0.1).restart(); // Дать небольшой импульс
-        //         setTimeout(() => simulation.stop(), 2000); // И снова остановить через 2 сек
-        //     }
-        // }, 15000);
-
-
+            simulation.alphaTarget(0.01).restart(); 
+             setTimeout(() => {
+                simulation.stop();
+            }, 3000);
+        }, 7000); 
     </script>
 </body>
 </html>
