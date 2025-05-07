@@ -98,6 +98,25 @@
             font-size: 8px; /* Уменьшил, но будет отображаться */
             fill: #f0f0f0;
         }
+
+        /* --- Plus icon hint for collapsible nodes --- */
+        .expand-icon {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            fill: #ff00ff;
+            text-shadow: 0 0 5px #ff00ff, 0 0 8px #00f0ff;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        /* Pulse animation for collapsed (click‑to‑expand) nodes */
+        @keyframes pulse {
+            0%   { stroke-width: 2px; }
+            100% { stroke-width: 5px; }
+        }
+        .node.collapsed > circle {
+            animation: pulse 1s ease-in-out infinite;
+        }
         .link {
             stroke: #ff00ff; /* Пурпурные линии */
             stroke-opacity: 0.7;
@@ -119,6 +138,7 @@
             box-shadow: 0 0 10px #00f0ff;
             max-width: 200px;
             word-wrap: break-word;
+            z-index: 99;
         }
         .controls {
             position: absolute;
@@ -188,45 +208,155 @@
                 {
                     name: "Сегменты Рынка", type: "main-category", icon: "📊", description: "Основные сегменты криптовалютного рынка.",
                     children: [
-                        { name: "CEX", type: "sub-category", icon: "🏦", description: "Централизованные биржи.",
+                        {
+                            name: "CEX", type: "sub-category", icon: "🏦", description: "Централизованные биржи.",
                             children: [
                                 { name: "Binance", type: "item", icon: "B", description: "Крупнейшая биржа." },
-                                { name: "Coinbase", type: "item", icon: "C", description: "Популярна в США." },
-                                { name: "Kraken", type: "item", icon: "K", description: "Старейшая биржа." }
+                                { name: "Coinbase", type: "item", icon: "C", description: "Биржа № 1 в США." },
+                                { name: "Bybit", type: "item", icon: "🅱️", description: "Лидер деривативов в Азии." },
+                                { name: "OKX", type: "item", icon: "🅾️", description: "Мультимаркет биржа." },
+                                { name: "Crypto.com", type: "item", icon: "🌐", description: "Крипто‑экосистема и биржа." },
+                                { name: "Kraken", type: "item", icon: "K", description: "Старейшая глобальная биржа." },
+                                { name: "KuCoin", type: "item", icon: "Kc", description: "Известная глобальная биржа." },
+                                { name: "HTX (Huobi)", type: "item", icon: "H", description: "Крупная азиатская биржа." },
+                                { name: "Bitget", type: "item", icon: "Bg", description: "Быстро растущий деривативный CEX." },
+                                { name: "Gate.io", type: "item", icon: "G", description: "Старейшая биржа альткоинов." },
+                                { name: "Bitfinex", type: "item", icon: "Bf", description: "Опытная площадка, связана с Tether." },
+                                { name: "Upbit", type: "item", icon: "U", description: "Корейский лидер по объёму." },
+                                { name: "WhiteBIT", type: "item", icon: "W", description: "Европейская биржа, быстро растёт." },
+                                { name: "Gemini", type: "item", icon: "♊", description: "Регулируемая биржа США." }
                             ]
                         },
-                        { name: "DeFi & DEX", type: "sub-category", icon: "🔗", description: "Децентрализованные финансы и биржи.",
+                        {
+                            name: "DeFi & DEX", type: "sub-category", icon: "🔗", description: "Децентрализованные финансы и биржи.",
                             children: [
-                                { name: "Uniswap", type: "item", icon: "🦄", description: "Ведущая DEX." },
-                                { name: "Aave", type: "item", icon: "👻", description: "Лидер кредитования." },
-                                { name: "MakerDAO", type: "item", icon: "⚖️", description: "Протокол DAI." }
+                                { name: "Uniswap", type: "item", icon: "🦄", description: "Флагманский AMM‑DEX." },
+                                { name: "Curve", type: "item", icon: "🌀", description: "DEX для стейблкоинов." },
+                                { name: "Lido Finance", type: "item", icon: "🌅", description: "Ликвидный стейкинг ETH." },
+                                { name: "Aave", type: "item", icon: "👻", description: "Протокол кредитования." },
+                                { name: "MakerDAO", type: "item", icon: "⚖️", description: "Эмитент DAI." },
+                                { name: "1inch", type: "item", icon: "1️⃣", description: "DEX‑агрегатор." }
                             ]
                         },
-                        { name: "NFT Маркетплейсы", type: "sub-category", icon: "🖼️", description: "Платформы для торговли NFT.",
+                        {
+                            name: "NFT Маркетплейсы", type: "sub-category", icon: "🖼️", description: "Платформы для торговли NFT.",
                             children: [
-                                { name: "OpenSea", type: "item", icon: "🌊", description: "Крупнейший NFT маркетплейс." },
-                                { name: "Magic Eden", type: "item", icon: "🧙", description: "Доминирует на Solana." }
+                                { name: "OpenSea", type: "item", icon: "🌊", description: "Крупнейший NFT‑маркетплейс." },
+                                { name: "Blur", type: "item", icon: "💨", description: "Биржа для трейдеров NFT." },
+                                { name: "Magic Eden", type: "item", icon: "🧙", description: "Топ‑платформа на Solana." }
                             ]
                         },
-                        { name: "Кошельки", type: "sub-category", icon: "👛", description: "Инструменты для управления активами.",
+                        {
+                            name: "Кошельки", type: "sub-category", icon: "👛", description: "Инструменты для управления активами.",
                             children: [
-                                { name: "MetaMask", type: "item", icon: "🦊", description: "Популярный программный кошелек." },
-                                { name: "Trust Wallet", type: "item", icon: "🛡️", description: "Мобильный кошелек Binance." },
-                                { name: "Ledger/Trezor", type: "item", icon: "🔒", description: "Аппаратные кошельки." }
+                                { name: "MetaMask", type: "item", icon: "🦊", description: "Популярный Web3‑кошелек." },
+                                { name: "Trust Wallet", type: "item", icon: "🛡️", description: "Мультичейн кошелек." },
+                                { name: "Ledger", type: "item", icon: "🔒", description: "Аппаратный кошелек." },
+                                { name: "Trezor", type: "item", icon: "🔐", description: "Аппаратный кошелек." }
                             ]
                         },
-                        { name: "L2 Решения", type: "sub-category", icon: "🚀", description: "Решения масштабирования L2.",
+                        {
+                            name: "L2 Решения", type: "sub-category", icon: "🚀", description: "Решения масштабирования второго уровня.",
                             children: [
-                                { name: "Polygon", type: "item", icon: "🟣", description: "Ведущая L2 экосистема." },
-                                { name: "Arbitrum", type: "item", icon: "🅰️", description: "Лидер Optimistic Rollup." },
-                                { name: "Optimism", type: "item", icon: "🔴", description: "Популярный Optimistic Rollup." }
+                                { name: "Polygon", type: "item", icon: "🟣", description: "Rollup‑экосистема." },
+                                { name: "Arbitrum", type: "item", icon: "🅰️", description: "Optimistic Rollup лидер." },
+                                { name: "Optimism", type: "item", icon: "🔴", description: "Сеть Superchain." },
+                                { name: "Base", type: "item", icon: "🅱️", description: "L2 от Coinbase." },
+                                { name: "zkSync Era", type: "item", icon: "🌀", description: "ZK‑Rollup." }
                             ]
                         },
-                        { name: "Стейблкоины", type: "sub-category", icon: "💲", description: "Эмитенты стейблкоинов.",
+                        {
+                            name: "Стейблкоины", type: "sub-category", icon: "💲", description: "Токены с привязкой к фиату.",
                             children: [
                                 { name: "Tether (USDT)", type: "item", icon: "₮", description: "Крупнейший стейблкоин." },
-                                { name: "Circle (USDC)", type: "item", icon: "C", description: "Второй по величине." },
-                                { name: "MakerDAO (DAI)", type: "item", icon: "D", description: "Децентрализованный стейблкоин." }
+                                { name: "Circle (USDC)", type: "item", icon: "C", description: "Регулируемый USD‑койн." },
+                                { name: "MakerDAO (DAI)", type: "item", icon: "D", description: "Децентрализованный стейблкоин." },
+                                { name: "BUSD", type: "item", icon: "B", description: "Стейблкоин Binance (сокращается)." }
+                            ]
+                        },
+                        {
+                            name: "Оракулы", type: "sub-category", icon: "🔮", description: "Сети данных для смарт‑контрактов.",
+                            children: [
+                                { name: "Chainlink", type: "item", icon: "🔗", description: "Лидер рынка оракулов." },
+                                { name: "Pyth Network", type: "item", icon: "🐍", description: "Высокочастотные данные." },
+                                { name: "Band Protocol", type: "item", icon: "🎼", description: "Oracle‑сеть Cosmos." }
+                            ]
+                        },
+                        {
+                            name: "RWA & Токенизация",
+                            type: "sub-category",
+                            icon: "🏠",
+                            description: "Токенизированные реальные активы.",
+                            children: [
+                                {
+                                    name: "Недвижимость",
+                                    type: "sub-category",
+                                    icon: "🏘️",
+                                    description: "Токенизация жилой и коммерческой недвижимости.",
+                                    children: [
+                                        { name: "RealT",      type: "item", icon: "🏠", description: "Доли домов с арендным доходом." },
+                                        { name: "Propy",      type: "item", icon: "📜", description: "Сделки с недвижимостью через NFT." },
+                                        { name: "RedSwan",    type: "item", icon: "🦢", description: "Коммерческая недвижимость." },
+                                        { name: "SolidBlock", type: "item", icon: "🧱", description: "Токены CRE‑объектов." }
+                                    ]
+                                },
+                                {
+                                    name: "Облигации и Долг",
+                                    type: "sub-category",
+                                    icon: "💳",
+                                    description: "Токенизированные государственные и корпоративные облигации.",
+                                    children: [
+                                        { name: "EIB Digital Bonds", type: "item", icon: "🇪🇺", description: "Выпуски ЕИБ на DLT." },
+                                        { name: "HK Green Bond",     type: "item", icon: "🌱", description: "Зелёные госбонды Гонконга." },
+                                        { name: "Santander Bond",    type: "item", icon: "💷", description: "Бонд Santander на Ethereum." },
+                                        { name: "JPM TCN",           type: "item", icon: "🌐", description: "Сеть токенизации залога." }
+                                    ]
+                                },
+                                {
+                                    name: "Фонды и ЦБ",
+                                    type: "sub-category",
+                                    icon: "📈",
+                                    description: "Токенизированные фонды и акции.",
+                                    children: [
+                                        { name: "Franklin OnChain Fund", type: "item", icon: "🏦", description: "Фонд денежного рынка." },
+                                        { name: "WisdomTree Prime",      type: "item", icon: "📊", description: "Цифровые индексные фонды." },
+                                        { name: "Arca ArCoin",           type: "item", icon: "🪙", description: "Фонд US Treasuries в токене." },
+                                        { name: "Hamilton Lane Funds",   type: "item", icon: "🏛️", description: "PE‑фонды в токенах." }
+                                    ]
+                                },
+                                {
+                                    name: "Частный капитал",
+                                    type: "sub-category",
+                                    icon: "🚀",
+                                    description: "Токенизация private equity и стартапов.",
+                                    children: [
+                                        { name: "Securitize", type: "item", icon: "🔗", description: "Платформа цифровых акций." },
+                                        { name: "Citi / SDX", type: "item", icon: "🏢", description: "Pre‑IPO акции (запуск 2025)." },
+                                        { name: "ADDx",       type: "item", icon: "🌏", description: "Азиатская платформа PE." }
+                                    ]
+                                },
+                                {
+                                    name: "Товары",
+                                    type: "sub-category",
+                                    icon: "🪙",
+                                    description: "Токены золота и сырьевых активов.",
+                                    children: [
+                                        { name: "PAXG",      type: "item", icon: "🥇", description: "Золото Paxos Gold." },
+                                        { name: "XAUT",      type: "item", icon: "🥇", description: "Tether Gold." },
+                                        { name: "Meld Gold", type: "item", icon: "🔗", description: "Золото на Algorand." }
+                                    ]
+                                },
+                                {
+                                    name: "Кредитная Инфра",
+                                    type: "sub-category",
+                                    icon: "🏦",
+                                    description: "Токенизированные кредитные протоколы.",
+                                    children: [
+                                        { name: "Centrifuge",    type: "item", icon: "⚙️", description: "Пулы дебиторской задолженности." },
+                                        { name: "Maple Finance", type: "item", icon: "🌳", description: "Необеспеченные кредиты." },
+                                        { name: "Goldfinch",     type: "item", icon: "🐦", description: "Кредиты без залога." }
+                                    ]
+                                }
                             ]
                         }
                     ]
@@ -235,7 +365,23 @@
                     name: "Криптовалюты", type: "main-category", icon: "🪙", description: "Обзор основных криптовалют.",
                     children: [
                         { name: "Bitcoin (BTC)", type: "sub-category", icon: "₿", description: "'Цифровое золото'." },
-                        { name: "Ethereum (ETH)", type: "sub-category", icon: "♦️", description: "'Мировой компьютер'." },
+                        { 
+                            name: "Ethereum (ETH)",
+                            type: "sub-category",
+                            icon: "♦️",
+                            description: "'Мировой компьютер'.",
+                            children: [
+                                { name: "Ethereum Classic (ETC)", type: "item", icon: "⚒️", description: "PoW хардфорк 2016." },
+                                { name: "EthereumPoW (ETHW)", type: "item", icon: "💎", description: "PoW форк 2022." },
+                                { name: "Ethereum Fair (ETF)", type: "item", icon: "🔆", description: "PoW форк 2022." },
+                                { name: "Arbitrum One", type: "item", icon: "🅰️", description: "Optimistic Rollup L2." },
+                                { name: "Optimism", type: "item", icon: "🔴", description: "Optimistic Rollup L2." },
+                                { name: "Base", type: "item", icon: "🅱️", description: "L2 от Coinbase." },
+                                { name: "zkSync Era", type: "item", icon: "🌀", description: "ZK‑Rollup L2." },
+                                { name: "StarkNet", type: "item", icon: "🌟", description: "ZK‑Rollup L2 (Cairo)." },
+                                { name: "Polygon zkEVM", type: "item", icon: "🟣", description: "ZK‑EVM L2 от Polygon." }
+                            ]
+                        },
                         { name: "Платежные", type: "sub-category", icon: "💸", description: "Криптовалюты для платежей.",
                             children: [
                                 { name: "Ripple (XRP)", type: "item", icon: "✖️", description: "Трансграничные платежи." },
@@ -330,6 +476,7 @@
             .data(nodes)
             .join("g")
             .attr("class", d => `node ${d.data.type || 'item'}`)
+            .attr("data-id", (d,i) => i)            // ★ add this line
             .call(drag(simulation));
 
         node.append("circle")
@@ -418,8 +565,69 @@
                 }
             });
 
+        // Plus icon hint (shows when branch is collapsed)
+        node.append("text")
+            .attr("class", "expand-icon")
+            .attr("text-anchor", "middle")
+            .attr("dy", "0.45em")
+            .text("+");
 
         const tooltip = d3.select(".tooltip");
+
+        /* ---------  COLLAPSE / EXPAND HELPERS  --------- */
+        // Collapse all nodes at depth ≥ 2 (hide leaf branches initially)
+        root.descendants().forEach(d => {
+            if (d.children && d.depth >= 2) {
+                d._children = d.children;
+                d.children = null;
+            }
+        });
+        // Initial visibility pass (sub‑categories collapsed by default)
+
+        // Determine if a node and all its ancestors are expanded
+        function isNodeVisible(nd) {
+            let current = nd;
+            while (current.parent) {
+                if (!current.parent.children) return false; // ancestor collapsed
+                current = current.parent;
+            }
+            return true;
+        }
+
+        // Transition‑based visibility refresh for all nodes / links
+        function updateVisibility() {
+            node
+                .classed("collapsed", d => d._children && !d.children)  // highlight collapsible
+                .transition().duration(400)
+                .style("opacity", d => isNodeVisible(d) ? 1 : 0)
+                .style("pointer-events", d => isNodeVisible(d) ? "all" : "none");
+
+            link.transition().duration(400)
+                .style("opacity", d => (isNodeVisible(d.source) && isNodeVisible(d.target)) ? 0.7 : 0)
+                .style("pointer-events", d => (isNodeVisible(d.source) && isNodeVisible(d.target)) ? "all" : "none");
+
+            // Show "+" when node has hidden children and is visible
+            node.select(".expand-icon")
+                .style("opacity", d => (d._children && !d.children && isNodeVisible(d) ? 1 : 0));
+        }
+
+        // Toggle children on click (collapse ↔ expand)
+        function toggleCollapse(event, d) {
+            if (!d.children && !d._children) return;          // leaf nodes do nothing
+            if (d.children) {
+                d._children = d.children;   // collapse
+                d.children = null;
+            } else {
+                d.children = d._children;   // expand
+                d._children = null;
+            }
+            updateVisibility();                         // animate in/out
+        }
+        /* ------------------------------------------------ */
+
+        // Toggle collapse / expand on click with smooth animation
+        node.on("click", toggleCollapse);
+
         node.on("mouseover", function(event, d) {
             tooltip.transition().duration(200).style("opacity", .9);
             tooltip.html(`<strong>${d.data.icon ? d.data.icon + ' ' : ''}${d.data.name}</strong><br>${d.data.description || ''}`)
@@ -435,6 +643,9 @@
             link.style('stroke-opacity', 0.7);
             link.style('stroke', '#ff00ff');
         });
+
+        // Initial visibility pass (all expanded by default)
+        updateVisibility();
 
         simulation.on("tick", () => {
             link
