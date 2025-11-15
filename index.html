@@ -423,6 +423,273 @@
                         { name: "Принятие Платежей", type: "item", icon: "🛒", description: "Использование в оплате." },
                         { name: "Регул. Ясность", type: "item", icon: "✅", description: "Четкие правила." }
                     ]
+                },
+                {
+                    name: "Стратегия Трейдинга", type: "main-category", icon: "📊", description: "Торговая стратегия альткоинами с индикаторами доминации.",
+                    children: [
+                        {
+                            name: "Индикаторы Доминации",
+                            type: "sub-category",
+                            icon: "📈",
+                            description: "Ключевые метрики распределения капитала.",
+                            children: [
+                                {
+                                    name: "BTC.D",
+                                    type: "item",
+                                    icon: "₿",
+                                    description: "Доминация Bitcoin. >50% = BTC сезон, <40% = альт‑сезон."
+                                },
+                                {
+                                    name: "USDT.D",
+                                    type: "item",
+                                    icon: "₮",
+                                    description: "Доминация Tether. Рост = страх/выход в кеш, падение = риск‑он."
+                                },
+                                {
+                                    name: "OTHERS.D",
+                                    type: "item",
+                                    icon: "🔷",
+                                    description: "Доминация альткоинов (без BTC/ETH). Рост = альт‑сезон."
+                                },
+                                {
+                                    name: "TOTAL3",
+                                    type: "item",
+                                    icon: "💹",
+                                    description: "Капитализация без BTC/ETH. Рост = деньги идут в альты."
+                                }
+                            ]
+                        },
+                        {
+                            name: "Фазы Рынка",
+                            type: "sub-category",
+                            icon: "🔄",
+                            description: "Определение текущей фазы крипторынка.",
+                            children: [
+                                {
+                                    name: "Фаза 1: BTC Рост",
+                                    type: "item",
+                                    icon: "1️⃣",
+                                    description: "BTC.D↑ USDT.D↓ TOTAL3→. Bitcoin растет, альты стоят. Не торговать альтами."
+                                },
+                                {
+                                    name: "Фаза 2: ETH Подхват",
+                                    type: "item",
+                                    icon: "2️⃣",
+                                    description: "BTC.D→ ETH растет, TOTAL3 начинает↑. Готовиться к альт‑сезону."
+                                },
+                                {
+                                    name: "Фаза 3: Альт‑Сезон",
+                                    type: "item",
+                                    icon: "3️⃣",
+                                    description: "BTC.D↓ OTHERS.D↑ TOTAL3↑↑ USDT.D↓. Активная торговля альтами."
+                                },
+                                {
+                                    name: "Фаза 4: Коррекция",
+                                    type: "item",
+                                    icon: "4️⃣",
+                                    description: "USDT.D↑ BTC.D↑ TOTAL3↓. Выход в стейблы, фиксация прибыли."
+                                }
+                            ]
+                        },
+                        {
+                            name: "Сигналы Входа",
+                            type: "sub-category",
+                            icon: "🟢",
+                            description: "Условия для открытия лонг‑позиций в альткоинах.",
+                            children: [
+                                {
+                                    name: "Сильный Сигнал",
+                                    type: "item",
+                                    icon: "🚀",
+                                    description: "BTC.D падает ниже 45% + OTHERS.D растет + TOTAL3 пробивает ATH + USDT.D < 5%."
+                                },
+                                {
+                                    name: "Средний Сигнал",
+                                    type: "item",
+                                    icon: "⬆️",
+                                    description: "BTC.D снижается 3+ дня + TOTAL3 растет + график альта пробивает сопротивление."
+                                },
+                                {
+                                    name: "Слабый Сигнал",
+                                    type: "item",
+                                    icon: "➡️",
+                                    description: "USDT.D падает + альт показывает дивергенцию RSI на 4H. Малая позиция."
+                                },
+                                {
+                                    name: "Подтверждение",
+                                    type: "item",
+                                    icon: "✔️",
+                                    description: "График альта: пробой линии тренда + объем выше среднего + RSI > 50."
+                                }
+                            ]
+                        },
+                        {
+                            name: "Сигналы Выхода",
+                            type: "sub-category",
+                            icon: "🔴",
+                            description: "Условия для закрытия позиций и фиксации прибыли.",
+                            children: [
+                                {
+                                    name: "Стоп‑Лосс",
+                                    type: "item",
+                                    icon: "🛑",
+                                    description: "USDT.D резкий рост >1% за час ИЛИ BTC.D пробивает вверх 48%. Экстренный выход."
+                                },
+                                {
+                                    name: "Тейк‑Профит 1",
+                                    type: "item",
+                                    icon: "💰",
+                                    description: "+30-50% прибыли: фиксация 30-40% позиции. OTHERS.D начинает флэт."
+                                },
+                                {
+                                    name: "Тейк‑Профит 2",
+                                    type: "item",
+                                    icon: "💎",
+                                    description: "+80-120%: фиксация еще 40%. BTC.D разворачивается вверх."
+                                },
+                                {
+                                    name: "Полный Выход",
+                                    type: "item",
+                                    icon: "🚪",
+                                    description: "USDT.D растет 2 дня подряд + TOTAL3 падает + альт теряет уровень поддержки."
+                                }
+                            ]
+                        },
+                        {
+                            name: "Управление Рисками",
+                            type: "sub-category",
+                            icon: "🛡️",
+                            description: "Правила защиты капитала.",
+                            children: [
+                                {
+                                    name: "Размер Позиции",
+                                    type: "item",
+                                    icon: "⚖️",
+                                    description: "Сильный сигнал: 5-8% от депо. Средний: 3-5%. Слабый: 1-2%."
+                                },
+                                {
+                                    name: "Диверсификация",
+                                    type: "item",
+                                    icon: "🎯",
+                                    description: "Не более 3-5 альтов одновременно. Разные секторы (DeFi, L1, AI, Gaming)."
+                                },
+                                {
+                                    name: "Трейлинг Стоп",
+                                    type: "item",
+                                    icon: "📉",
+                                    description: "После +50% прибыли: трейлинг -15% от локального максимума."
+                                },
+                                {
+                                    name: "Запрет Торговли",
+                                    type: "item",
+                                    icon: "⛔",
+                                    description: "НЕ торговать если: USDT.D > 7% ИЛИ BTC.D > 55% ИЛИ оба растут одновременно."
+                                }
+                            ]
+                        },
+                        {
+                            name: "Тактические Приемы",
+                            type: "sub-category",
+                            icon: "🎮",
+                            description: "Дополнительные техники торговли.",
+                            children: [
+                                {
+                                    name: "Ротация Секторов",
+                                    type: "item",
+                                    icon: "🔀",
+                                    description: "Начало альт‑сезона: L1→DeFi→Gaming→Meme. Следовать за деньгами."
+                                },
+                                {
+                                    name: "Бета‑Коэффициент",
+                                    type: "item",
+                                    icon: "β",
+                                    description: "Выбирать альты с бета > 1.5 к BTC. Более агрессивный рост в альт‑сезон."
+                                },
+                                {
+                                    name: "Корреляция с ETH",
+                                    type: "item",
+                                    icon: "♦️",
+                                    description: "ETH часто лидирует альт‑сезон. Если ETH/BTC растет → альты следуют."
+                                },
+                                {
+                                    name: "Объемы TOTAL3",
+                                    type: "item",
+                                    icon: "📊",
+                                    description: "Рост TOTAL3 на высоком объеме → сильный тренд. Низкий объем → ложный пробой."
+                                }
+                            ]
+                        },
+                        {
+                            name: "Таймфреймы",
+                            type: "sub-category",
+                            icon: "⏰",
+                            description: "Временные интервалы для анализа.",
+                            children: [
+                                {
+                                    name: "Дневной (1D)",
+                                    type: "item",
+                                    icon: "D",
+                                    description: "Основной таймфрейм. Анализ BTC.D, OTHERS.D, TOTAL3 для фазы рынка."
+                                },
+                                {
+                                    name: "4‑Часовой (4H)",
+                                    type: "item",
+                                    icon: "4",
+                                    description: "Поиск точек входа. Дивергенции, пробои уровней на графике альта."
+                                },
+                                {
+                                    name: "1‑Часовой (1H)",
+                                    type: "item",
+                                    icon: "1",
+                                    description: "Точный вход. Проверка USDT.D на резкие скачки (риск‑офф)."
+                                },
+                                {
+                                    name: "Недельный (1W)",
+                                    type: "item",
+                                    icon: "W",
+                                    description: "Глобальный тренд. BTC.D weekly для определения макро‑цикла."
+                                }
+                            ]
+                        },
+                        {
+                            name: "Чеклист Перед Входом",
+                            type: "sub-category",
+                            icon: "✅",
+                            description: "Обязательная проверка перед открытием позиции.",
+                            children: [
+                                {
+                                    name: "☑ Фаза Рынка",
+                                    type: "item",
+                                    icon: "1",
+                                    description: "Убедиться что Фаза 3 (альт‑сезон) или переход из Фазы 2."
+                                },
+                                {
+                                    name: "☑ USDT.D",
+                                    type: "item",
+                                    icon: "2",
+                                    description: "Проверить что USDT.D падает или < 5%. Иначе ждать."
+                                },
+                                {
+                                    name: "☑ График Альта",
+                                    type: "item",
+                                    icon: "3",
+                                    description: "Пробой сопротивления + растущий объем + RSI 50-70."
+                                },
+                                {
+                                    name: "☑ Риск/Профит",
+                                    type: "item",
+                                    icon: "4",
+                                    description: "Соотношение минимум 1:3. Потенциал роста > 30%."
+                                },
+                                {
+                                    name: "☑ Новости",
+                                    type: "item",
+                                    icon: "5",
+                                    description: "Нет негатива по проекту. Позитивные новости = бонус."
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         };
