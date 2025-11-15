@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бектест Стратегии Мемкоинов</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0d0221;
+            color: #f0f0f0;
+            font-family: 'Roboto Mono', monospace;
+            margin: 0;
+            padding: 20px;
+        }
+        .header-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.5rem;
+            color: #00f0ff;
+            text-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff, 0 0 15px #00f0ff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .section {
+            background-color: #1a0a38;
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 15px #ff00ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.9rem;
+            color: #ff00ff;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ff00ff33;
+        }
+        th {
+            color: #00f0ff;
+            font-weight: bold;
+        }
+        .positive {
+            color: #00ff00;
+        }
+        .negative {
+            color: #ff0000;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+        }
+        svg text {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 10px;
+        }
+        .line {
+            fill: none;
+            stroke-width: 2px;
+        }
+        .axis path,
+        .axis line {
+            stroke: #00f0ff;
+        }
+        .axis text {
+            fill: #00f0ff;
+        }
+        .grid line {
+            stroke: #ffffff11;
+            stroke-dasharray: 2,2;
+        }
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid #00f0ff;
+            border-radius: 8px;
+            padding: 10px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 100;
+        }
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 3px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #00f0ff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border: 1px solid #00f0ff;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            background: #00f0ff22;
+            box-shadow: 0 0 10px #00f0ff;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Вернуться к карте</a>
+
+    <h1 class="header-title">Бектест Стратегии на Мемкоинах</h1>
+    <p style="text-align: center; margin-bottom: 30px; color: #00f0ff;">Период: 6 месяцев (180 дней) | Начальный капитал: 10,000 USDT</p>
+
+    <div class="section">
+        <h2 class="section-title">Сводка Результатов</h2>
+        <div id="summary-stats"></div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Результаты по Мемкоинам</h2>
+        <div id="coin-results"></div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">График Капитала (Equity Curve)</h2>
+        <div class="legend" id="equity-legend"></div>
+        <div class="chart-container" id="equity-chart"></div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Индикаторы Доминации</h2>
+        <div class="legend" id="dominance-legend"></div>
+        <div class="chart-container" id="dominance-chart"></div>
+    </div>
+
+    <div class="tooltip"></div>
+
+    <script>
+        // ========== ГЕНЕРАЦИЯ СИМУЛИРОВАННЫХ ДАННЫХ ==========
+
+        // Генерация реалистичных данных индикаторов доминации за 6 месяцев
+        function generateDominanceData(days) {
+            const data = [];
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - days);
+
+            let btcD = 52; // Начинаем с высокой доминации BTC
+            let usdtD = 6;
+            let othersD = 8;
+
+            for (let i = 0; i < days; i++) {
+                const date = new Date(startDate);
+                date.setDate(date.getDate() + i);
+
+                // Симуляция рыночных фаз
+                const phase = Math.floor(i / 45); // Каждые 45 дней новая фаза
+
+                if (phase === 0) {
+                    // Фаза 1: BTC растет
+                    btcD += Math.random() * 0.3 - 0.1;
+                    usdtD += Math.random() * 0.1 - 0.15;
+                    othersD += Math.random() * 0.1 - 0.05;
+                } else if (phase === 1) {
+                    // Фаза 2: Переход к альтам
+                    btcD += Math.random() * 0.1 - 0.2;
+                    usdtD += Math.random() * 0.1 - 0.2;
+                    othersD += Math.random() * 0.2 - 0.05;
+                } else if (phase === 2) {
+                    // Фаза 3: Альт-сезон
+                    btcD += Math.random() * 0.1 - 0.3;
+                    usdtD += Math.random() * 0.05 - 0.15;
+                    othersD += Math.random() * 0.3 - 0.1;
+                } else {
+                    // Фаза 4: Коррекция
+                    btcD += Math.random() * 0.2 - 0.05;
+                    usdtD += Math.random() * 0.3 - 0.05;
+                    othersD += Math.random() * 0.05 - 0.2;
+                }
+
+                // Ограничиваем значения
+                btcD = Math.max(40, Math.min(58, btcD));
+                usdtD = Math.max(3, Math.min(8, usdtD));
+                othersD = Math.max(6, Math.min(14, othersD));
+
+                const total3 = 400 + (othersD - 8) * 30 + Math.random() * 50;
+
+                data.push({
+                    date: new Date(date),
+                    btcD: parseFloat(btcD.toFixed(2)),
+                    usdtD: parseFloat(usdtD.toFixed(2)),
+                    othersD: parseFloat(othersD.toFixed(2)),
+                    total3: parseFloat(total3.toFixed(2))
+                });
+            }
+
+            return data;
+        }
+
+        // Генерация цен мемкоинов
+        function generateMemecoinsData(dominanceData) {
+            const memecoins = {
+                'DOGE': { price: 0.08, volatility: 0.08, beta: 1.8 },
+                'SHIB': { price: 0.000015, volatility: 0.12, beta: 2.2 },
+                'PEPE': { price: 0.0000012, volatility: 0.15, beta: 2.5 },
+                'WIF': { price: 0.45, volatility: 0.18, beta: 2.8 },
+                'BONK': { price: 0.0000088, volatility: 0.14, beta: 2.3 }
+            };
+
+            const results = {};
+
+            for (const [coin, params] of Object.entries(memecoins)) {
+                const prices = [];
+                let currentPrice = params.price;
+
+                dominanceData.forEach((day, i) => {
+                    // Цена зависит от фазы рынка
+                    let trend = 0;
+
+                    // Когда OTHERS.D растет и BTC.D падает = альты растут
+                    const prevDay = i > 0 ? dominanceData[i-1] : day;
+                    const othersDChange = day.othersD - prevDay.othersD;
+                    const btcDChange = day.btcD - prevDay.btcD;
+
+                    trend = othersDChange * params.beta - btcDChange * 0.5;
+
+                    // Добавляем случайную волатильность
+                    const randomChange = (Math.random() - 0.5) * params.volatility;
+                    const change = trend + randomChange;
+
+                    currentPrice = currentPrice * (1 + change);
+
+                    prices.push({
+                        date: day.date,
+                        price: parseFloat(currentPrice.toFixed(coin === 'WIF' ? 4 : 10)),
+                        othersD: day.othersD,
+                        btcD: day.btcD,
+                        usdtD: day.usdtD,
+                        total3: day.total3
+                    });
+                });
+
+                results[coin] = { data: prices, params };
+            }
+
+            return results;
+        }
+
+        // ========== ДВИЖОК БЕКТЕСТА ==========
+
+        function runBacktest(coinData, initialCapital = 10000) {
+            const results = {};
+
+            for (const [coin, info] of Object.entries(coinData)) {
+                const trades = [];
+                let capital = initialCapital;
+                const equityCurve = [];
+                let position = null;
+                let winningTrades = 0;
+                let losingTrades = 0;
+                let maxDrawdown = 0;
+                let peakCapital = capital;
+
+                info.data.forEach((day, i) => {
+                    const prevDay = i > 0 ? info.data[i-1] : day;
+
+                    // Определяем фазу рынка
+                    const phase = getMarketPhase(day);
+
+                    // Проверяем сигнал входа
+                    if (!position && phase === 3) { // Альт-сезон
+                        const signalStrength = getEntrySignal(day, prevDay);
+
+                        if (signalStrength > 0) {
+                            // Открываем позицию
+                            const positionSize = capital * (signalStrength === 3 ? 0.07 : signalStrength === 2 ? 0.04 : 0.02);
+                            const amount = positionSize / day.price;
+
+                            position = {
+                                coin: coin,
+                                entryDate: day.date,
+                                entryPrice: day.price,
+                                amount: amount,
+                                invested: positionSize,
+                                signal: signalStrength
+                            };
+
+                            capital -= positionSize;
+                        }
+                    }
+
+                    // Проверяем сигнал выхода
+                    if (position) {
+                        const exitSignal = getExitSignal(day, prevDay, position, i);
+
+                        if (exitSignal) {
+                            // Закрываем позицию
+                            const exitValue = position.amount * day.price;
+                            const profit = exitValue - position.invested;
+                            const profitPercent = (profit / position.invested) * 100;
+
+                            capital += exitValue;
+
+                            trades.push({
+                                entry: position.entryDate,
+                                exit: day.date,
+                                entryPrice: position.entryPrice,
+                                exitPrice: day.price,
+                                profit: profit,
+                                profitPercent: profitPercent,
+                                reason: exitSignal
+                            });
+
+                            if (profit > 0) winningTrades++;
+                            else losingTrades++;
+
+                            position = null;
+                        }
+                    }
+
+                    // Считаем текущий капитал
+                    const currentValue = capital + (position ? position.amount * day.price : 0);
+
+                    equityCurve.push({
+                        date: day.date,
+                        value: currentValue
+                    });
+
+                    // Обновляем максимальную просадку
+                    if (currentValue > peakCapital) {
+                        peakCapital = currentValue;
+                    }
+                    const drawdown = ((peakCapital - currentValue) / peakCapital) * 100;
+                    if (drawdown > maxDrawdown) {
+                        maxDrawdown = drawdown;
+                    }
+                });
+
+                // Закрываем открытую позицию в конце
+                if (position) {
+                    const lastDay = info.data[info.data.length - 1];
+                    const exitValue = position.amount * lastDay.price;
+                    capital += exitValue;
+                }
+
+                const finalCapital = capital;
+                const totalReturn = ((finalCapital - initialCapital) / initialCapital) * 100;
+                const totalTrades = trades.length;
+                const winRate = totalTrades > 0 ? (winningTrades / totalTrades) * 100 : 0;
+                const avgProfit = totalTrades > 0 ? trades.reduce((sum, t) => sum + t.profitPercent, 0) / totalTrades : 0;
+
+                results[coin] = {
+                    initialCapital,
+                    finalCapital,
+                    totalReturn,
+                    totalTrades,
+                    winningTrades,
+                    losingTrades,
+                    winRate,
+                    avgProfit,
+                    maxDrawdown,
+                    equityCurve,
+                    trades
+                };
+            }
+
+            return results;
+        }
+
+        // Определение фазы рынка (1-4)
+        function getMarketPhase(day) {
+            if (day.btcD > 50 && day.usdtD < 6) return 1; // BTC рост
+            if (day.btcD < 50 && day.btcD > 45 && day.othersD > 9) return 2; // ETH подхват
+            if (day.btcD < 45 && day.othersD > 10 && day.usdtD < 5) return 3; // Альт-сезон
+            if (day.usdtD > 6 && day.btcD > 48) return 4; // Коррекция
+            return 2; // По умолчанию
+        }
+
+        // Определение силы сигнала входа (0 - нет сигнала, 1 - слабый, 2 - средний, 3 - сильный)
+        function getEntrySignal(day, prevDay) {
+            // Запрет торговли
+            if (day.usdtD > 7 || day.btcD > 55) return 0;
+
+            // Сильный сигнал
+            if (day.btcD < 45 && day.othersD > prevDay.othersD && day.usdtD < 5) return 3;
+
+            // Средний сигнал
+            if (day.btcD < prevDay.btcD && day.total3 > prevDay.total3) return 2;
+
+            // Слабый сигнал
+            if (day.usdtD < prevDay.usdtD) return 1;
+
+            return 0;
+        }
+
+        // Определение сигнала выхода
+        function getExitSignal(day, prevDay, position, dayIndex) {
+            const profitPercent = ((day.price - position.entryPrice) / position.entryPrice) * 100;
+
+            // Стоп-лосс
+            if (day.usdtD > prevDay.usdtD + 1 || day.btcD > 48) {
+                return 'stop-loss';
+            }
+
+            // Тейк-профит 1
+            if (profitPercent >= 30 && profitPercent <= 50) {
+                return 'take-profit-1';
+            }
+
+            // Тейк-профит 2
+            if (profitPercent >= 80) {
+                return 'take-profit-2';
+            }
+
+            // Полный выход
+            if (day.usdtD > 6 && day.total3 < prevDay.total3) {
+                return 'full-exit';
+            }
+
+            return null;
+        }
+
+        // ========== ВИЗУАЛИЗАЦИЯ ==========
+
+        const dominanceData = generateDominanceData(180);
+        const memecoinsData = generateMemecoinsData(dominanceData);
+        const backtestResults = runBacktest(memecoinsData, 10000);
+
+        // Отображение сводки
+        function displaySummary() {
+            const totalInitial = Object.values(backtestResults).reduce((sum, r) => sum + r.initialCapital, 0);
+            const totalFinal = Object.values(backtestResults).reduce((sum, r) => sum + r.finalCapital, 0);
+            const totalReturn = ((totalFinal - totalInitial) / totalInitial) * 100;
+            const totalTrades = Object.values(backtestResults).reduce((sum, r) => sum + r.totalTrades, 0);
+            const totalWinning = Object.values(backtestResults).reduce((sum, r) => sum + r.winningTrades, 0);
+            const avgWinRate = Object.values(backtestResults).reduce((sum, r) => sum + r.winRate, 0) / Object.keys(backtestResults).length;
+            const maxDrawdown = Math.max(...Object.values(backtestResults).map(r => r.maxDrawdown));
+
+            const html = `
+                <table>
+                    <tr>
+                        <th>Метрика</th>
+                        <th>Значение</th>
+                    </tr>
+                    <tr>
+                        <td>Общий начальный капитал</td>
+                        <td>${totalInitial.toFixed(2)} USDT</td>
+                    </tr>
+                    <tr>
+                        <td>Общий финальный капитал</td>
+                        <td class="${totalFinal > totalInitial ? 'positive' : 'negative'}">${totalFinal.toFixed(2)} USDT</td>
+                    </tr>
+                    <tr>
+                        <td>Общая доходность</td>
+                        <td class="${totalReturn > 0 ? 'positive' : 'negative'}">${totalReturn.toFixed(2)}%</td>
+                    </tr>
+                    <tr>
+                        <td>Всего сделок</td>
+                        <td>${totalTrades}</td>
+                    </tr>
+                    <tr>
+                        <td>Прибыльных сделок</td>
+                        <td class="positive">${totalWinning}</td>
+                    </tr>
+                    <tr>
+                        <td>Средний винрейт</td>
+                        <td class="${avgWinRate > 50 ? 'positive' : 'negative'}">${avgWinRate.toFixed(2)}%</td>
+                    </tr>
+                    <tr>
+                        <td>Макс. просадка</td>
+                        <td class="negative">${maxDrawdown.toFixed(2)}%</td>
+                    </tr>
+                </table>
+            `;
+
+            document.getElementById('summary-stats').innerHTML = html;
+        }
+
+        // Отображение результатов по монетам
+        function displayCoinResults() {
+            let html = '<table><tr><th>Монета</th><th>Доходность</th><th>Сделок</th><th>Винрейт</th><th>Сред. прибыль</th><th>Макс. просадка</th></tr>';
+
+            for (const [coin, result] of Object.entries(backtestResults)) {
+                html += `
+                    <tr>
+                        <td>${coin}</td>
+                        <td class="${result.totalReturn > 0 ? 'positive' : 'negative'}">${result.totalReturn.toFixed(2)}%</td>
+                        <td>${result.totalTrades}</td>
+                        <td class="${result.winRate > 50 ? 'positive' : 'negative'}">${result.winRate.toFixed(1)}%</td>
+                        <td class="${result.avgProfit > 0 ? 'positive' : 'negative'}">${result.avgProfit.toFixed(2)}%</td>
+                        <td class="negative">${result.maxDrawdown.toFixed(2)}%</td>
+                    </tr>
+                `;
+            }
+
+            html += '</table>';
+            document.getElementById('coin-results').innerHTML = html;
+        }
+
+        // График equity curve
+        function drawEquityCurve() {
+            const container = document.getElementById('equity-chart');
+            const width = container.clientWidth;
+            const height = 400;
+            const margin = {top: 20, right: 30, bottom: 50, left: 60};
+
+            const svg = d3.select('#equity-chart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const innerWidth = width - margin.left - margin.right;
+            const innerHeight = height - margin.top - margin.bottom;
+
+            // Шкалы
+            const x = d3.scaleTime()
+                .domain(d3.extent(dominanceData, d => d.date))
+                .range([0, innerWidth]);
+
+            const allValues = Object.values(backtestResults).flatMap(r => r.equityCurve.map(e => e.value));
+            const y = d3.scaleLinear()
+                .domain([d3.min(allValues) * 0.95, d3.max(allValues) * 1.05])
+                .range([innerHeight, 0]);
+
+            // Сетка
+            g.append('g')
+                .attr('class', 'grid')
+                .call(d3.axisLeft(y).tickSize(-innerWidth).tickFormat(''));
+
+            // Оси
+            g.append('g')
+                .attr('class', 'axis')
+                .attr('transform', `translate(0,${innerHeight})`)
+                .call(d3.axisBottom(x).ticks(6));
+
+            g.append('g')
+                .attr('class', 'axis')
+                .call(d3.axisLeft(y).ticks(5));
+
+            // Линии для каждой монеты
+            const colors = {
+                'DOGE': '#FFD700',
+                'SHIB': '#FF6B00',
+                'PEPE': '#00FF00',
+                'WIF': '#FF00FF',
+                'BONK': '#00F0FF'
+            };
+
+            const line = d3.line()
+                .x(d => x(d.date))
+                .y(d => y(d.value));
+
+            for (const [coin, result] of Object.entries(backtestResults)) {
+                g.append('path')
+                    .datum(result.equityCurve)
+                    .attr('class', 'line')
+                    .attr('d', line)
+                    .attr('stroke', colors[coin]);
+            }
+
+            // Легенда
+            const legend = d3.select('#equity-legend');
+            for (const [coin, color] of Object.entries(colors)) {
+                legend.append('div')
+                    .attr('class', 'legend-item')
+                    .html(`<div class="legend-color" style="background:${color}"></div><span>${coin}</span>`);
+            }
+        }
+
+        // График индикаторов доминации
+        function drawDominanceChart() {
+            const container = document.getElementById('dominance-chart');
+            const width = container.clientWidth;
+            const height = 400;
+            const margin = {top: 20, right: 30, bottom: 50, left: 60};
+
+            const svg = d3.select('#dominance-chart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const innerWidth = width - margin.left - margin.right;
+            const innerHeight = height - margin.top - margin.bottom;
+
+            // Шкалы
+            const x = d3.scaleTime()
+                .domain(d3.extent(dominanceData, d => d.date))
+                .range([0, innerWidth]);
+
+            const y = d3.scaleLinear()
+                .domain([0, 60])
+                .range([innerHeight, 0]);
+
+            // Сетка
+            g.append('g')
+                .attr('class', 'grid')
+                .call(d3.axisLeft(y).tickSize(-innerWidth).tickFormat(''));
+
+            // Оси
+            g.append('g')
+                .attr('class', 'axis')
+                .attr('transform', `translate(0,${innerHeight})`)
+                .call(d3.axisBottom(x).ticks(6));
+
+            g.append('g')
+                .attr('class', 'axis')
+                .call(d3.axisLeft(y).ticks(5));
+
+            // Линии
+            const indicators = [
+                { key: 'btcD', color: '#FFD700', name: 'BTC.D' },
+                { key: 'usdtD', color: '#00FF00', name: 'USDT.D' },
+                { key: 'othersD', color: '#FF00FF', name: 'OTHERS.D' }
+            ];
+
+            const line = d3.line()
+                .x(d => x(d.date))
+                .y(d => y(d.value));
+
+            for (const indicator of indicators) {
+                g.append('path')
+                    .datum(dominanceData.map(d => ({ date: d.date, value: d[indicator.key] })))
+                    .attr('class', 'line')
+                    .attr('d', line)
+                    .attr('stroke', indicator.color);
+            }
+
+            // Легенда
+            const legend = d3.select('#dominance-legend');
+            for (const indicator of indicators) {
+                legend.append('div')
+                    .attr('class', 'legend-item')
+                    .html(`<div class="legend-color" style="background:${indicator.color}"></div><span>${indicator.name}</span>`);
+            }
+        }
+
+        // Запуск визуализации
+        displaySummary();
+        displayCoinResults();
+        drawEquityCurve();
+        drawDominanceChart();
+    </script>
+</body>
+</html>
